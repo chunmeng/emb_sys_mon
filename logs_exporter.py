@@ -9,15 +9,11 @@ import argparse
 import logging
 import os
 import re
+from common import *
 from stats import Stats
 
 # working dir
 path = os.getcwd()
-
-def utc_str():
-    from datetime import datetime
-    utc = datetime.utcnow()
-    return utc.strftime("%s")
 
 # @TODO Make these args later
 file_ts = utc_str()
@@ -77,11 +73,19 @@ def get_cpuinfo(content):
     sirq = float(str(matches.group(1)).lstrip())
     return (True,used_cpu,sirq)
 
+''' parse for data '''
 def parse_data(content, stats):
-    ''' parse for data '''
     # logging.info("Parsing " + filter_nonprintable(line))
-    # Looks for
-    #   MemFree:           60792 kB
+    found,value = get_meminfo(content, 'MemTotal')
+    if found:
+        stats.memtotal = value
+        return found
+
+    found,value = get_meminfo(content, 'MemAvailable')
+    if found:
+        stats.memavail = value
+        return found
+
     found,value = get_meminfo(content, 'MemFree')
     if found:
         stats.memfree = value
@@ -115,21 +119,11 @@ def parse_data(content, stats):
 
     return False
 
-def file_accessible(filepath, mode):
-    ''' Check if a file exists and is accessible. '''
-    try:
-        f = open(filepath, mode)
-        f.close()
-    except IOError as e:
-        return False
-
-    return True
-
 def create_logs():
     logging.info("Creating logs with header")
     filename = path + mem_log
     with open(filename, "w") as myfile:
-        line = "ts,memfree,slab,sunreclaim,kmalloc-2048,kmalloc-512\n"
+        line = "ts,memutil,memfree,slab,sunreclaim,kmalloc-2048,kmalloc-512\n"
         myfile.write(line)
 
     filename = path + cpu_log
@@ -140,8 +134,7 @@ def create_logs():
 def write_mem(stats):
     filename = path + mem_log
     with open(filename, "a") as myfile:
-        line = stats.ts + "," + str(stats.memfree) + "," + str(stats.slab) + "," + str(stats.slab_unreclaim) + "," \
-                + str(stats.km2k) + "," + str(stats.km512) + "\n"
+        line = stats.ts + "," + str(stats.calc_memutil()) + "," + str(stats.memfree) + "," + str(stats.slab) + "," + str(stats.slab_unreclaim) + "," + str(stats.km2k) + "," + str(stats.km512) + "\n"
         myfile.write(line)
 
 def write_cpu(stats):
@@ -149,13 +142,6 @@ def write_cpu(stats):
     with open(filename, "a") as myfile:
         line = stats.ts + "," + str(stats.used_cpu) + "," + str(stats.sirq) + "\n"
         myfile.write(line)
-
-def filter_nonprintable(text):
-    import string
-    # Get the difference of all ASCII characters from the set of printable characters
-    nonprintable = set([chr(i) for i in range(128)]).difference(string.printable)
-    # Use translate to remove all non-printable characters
-    return text.translate({ord(character):None for character in nonprintable})
 
 def main():
     parser = argparse.ArgumentParser()
