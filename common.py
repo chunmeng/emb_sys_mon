@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # General utility methods - collected from various sources
+import logging
 
 def utc_str():
     from datetime import datetime
@@ -23,3 +24,6 @@ def filter_nonprintable(text):
     nonprintable = set([chr(i) for i in range(128)]).difference(string.printable)
     # Use translate to remove all non-printable characters
     return text.translate({ord(character):None for character in nonprintable})
+
+def set_logging(setlevel):
+    logging.basicConfig(level=setlevel, format='%(asctime)s %(filename)s [%(lineno)4d] %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')

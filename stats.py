@@ -5,10 +5,12 @@
 ####
 class Stats:
     def __init__(self):
-        self.ts = ''
+        self.it = 0  # iteration id
+        self.ts = ''  # timestamp
         self.memtotal = 0
         self.memfree = 0
         self.memavail = 0
+        self.memutil = 0.0 # calculated
         self.slab = 0
         self.slab_unreclaim = 0
         self.memavail = 0
@@ -21,5 +23,5 @@ class Stats:
         if (self.memtotal == 0):
             return 0.0
         memused = (self.memtotal - self.memavail)
-        memutil = float((memused/self.memtotal)*100)
-        return round(memutil,2)
+        self.memutil = float((memused/self.memtotal)*100)
+        return round(self.memutil,2)

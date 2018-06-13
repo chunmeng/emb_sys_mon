@@ -71,7 +71,7 @@ def mem_graph(data):
     plt.show('''block=False''')
 
 ''' Apps start '''
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s [%(lineno)4d] %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+set_logging(logging.DEBUG)
 
 parser = argparse.ArgumentParser()
 args_group = parser.add_argument_group()

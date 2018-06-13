@@ -20,7 +20,7 @@ file_ts = utc_str()
 cpu_log = '/cpu_data_' + file_ts + '.csv'
 mem_log = '/mem_data_' + file_ts + '.csv'
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s [%(lineno)4d] %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+set_logging(logging.DEBUG)
 
 # Looks for Every 60s: ... 2018-05-18 14:48:54
 header = 'Every 60s:'
