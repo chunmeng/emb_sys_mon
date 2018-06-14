@@ -26,10 +26,10 @@ set_logging(logging.DEBUG)
 # @TODO Make config path input arg
 config = Config(os.getcwd() + '/config.json')
 
-serial = SerialConsole() # The serial console to acquire data source stream
-# @TODO Login to console here
+serial = SerialConsole(config.console.path) # The serial console to acquire data source stream
+# serial.login(config.console.login, config.console.password)
 
-data_reader = DataReader(serial) # The parsing and aggregation of data into Stats
+data_reader = DataReaderStub() # The parsing and aggregation of data into Stats
 data_writer = DataWriter(os.getcwd()) # Output Stats data to file
 figure = plt.figure()
 

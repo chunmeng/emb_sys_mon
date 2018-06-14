@@ -3,35 +3,57 @@
 import serial
 import time
 import os
-import re
+import logging
 
 class SerialConsole:
-    def __init__(self):
+    def __init__(self, port):
         self.out = ''
+        self.port = port
 
-    def send(self, command_str):
-        serial_obj = serial.Serial()
-        serial_obj.baudrate = 115200
-        serial_obj.port = '/dev/ttyUSB0'
-        serial_obj.timeout = 1
-        
-        if "top" in command_str:
-            serial_obj.timeout = 10
-        serial_obj.open()
+    def send(self, command):
+        # configure the serial connections (the parameters differs on the device you are connecting to)
+        ser = serial.Serial(
+            port=self.port,
+            baudrate=115200,
+            parity=serial.PARITY_ODD,
+            stopbits=serial.STOPBITS_TWO,
+            bytesize=serial.SEVENBITS,
+            timeout=1
+        )
+
+        if "top" in command:
+            ser.timeout = 10
+        ser.open()
     
         time.sleep(1)
-        #if serial_obj.isOpen():
-            #print('Port: ' + serial_obj.portstr + " " + command_str)
-            #print("Command: " + command_str)
-        cmd = command_str + "\r"
-        #print("Port: " + serial_obj.portstr + "Cmd: " + cmd)
-        if serial_obj.inWaiting() > 0:
-            serial_obj.flushInput()
+        cmd = command + "\r"
+        if ser.inWaiting() > 0:
+            ser.flushInput()
 
-        serial_obj.write(bytes(cmd, 'UTF-8'))
-        self.out = serial_obj.read(size=4028).decode()
-        #print(msg)
-        #serial_obj.write("\x03\r\n")
-        serial_obj.close()
+        ser.write(bytes(cmd, 'UTF-8'))
+        self.out = ser.read(size=4028).decode()
+
+        ser.close()
         return self.out
 
+    def login(user, password):
+        self.send("\x03\r\n")
+        time.sleep(2)
+        content = self.send("\r")
+        if "~ #" in content:
+            logging.info("Already Logged in!")
+            return 1
+        while True:
+            if "~ #" not in content:
+                logging.info("Logging in to system...\n")
+                if "login" in content:
+                    content = self.send(user + "\r")
+                    content = self.send(password + "\r")
+                else:
+                    content = self.send("\r")
+            else:
+                logging.info("Login Complete!")
+                return 1
+
+        logging.error("Login Failed")
+        return 0  # Failed
