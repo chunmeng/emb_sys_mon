@@ -64,10 +64,6 @@ class DataUpdater:
 
     def __call__(self, i):
         logging.info("Iteration " + str(i))
-        # This way the plot can continuously run and we just keep
-        # watching new realizations of the process
-        if i == 0:
-            return self.init()
 
         # Read and write data
         stats = self.reader.get_stats()

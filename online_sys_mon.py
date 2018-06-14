@@ -15,12 +15,16 @@ from matplotlib.animation import FuncAnimation
 import os
 
 from common import *
+from config import Config
 from data_reader import *
 from data_writer import DataWriter
 from serial_console import SerialConsole
 from data_updater import DataUpdater
 
 set_logging(logging.DEBUG)
+
+# @TODO Make config path input arg
+config = Config(os.getcwd() + '/config.json')
 
 serial = SerialConsole() # The serial console to acquire data source stream
 # @TODO Login to console here
@@ -31,5 +35,5 @@ figure = plt.figure()
 
 du = DataUpdater(data_reader, data_writer, figure)
 anim = FuncAnimation(figure, du, init_func=du.init,
-                     interval=2000, blit=True)
+                     interval=config.interval * 1000, blit=True)
 plt.show()

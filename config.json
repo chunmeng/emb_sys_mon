@@ -1,0 +1,9 @@
+{
+    "console" : {
+        "type": "serial",
+        "path": "/dev/ttyUSB0",
+        "login": "root",
+        "password": "pwd"
+    },
+    "interval": 15
+}
