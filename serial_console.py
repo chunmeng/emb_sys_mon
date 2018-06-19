@@ -10,50 +10,46 @@ class SerialConsole:
         self.out = ''
         self.port = port
 
-    def send(self, command):
+    def send(self, command, timeout=1):
         # configure the serial connections (the parameters differs on the device you are connecting to)
         ser = serial.Serial(
             port=self.port,
-            baudrate=115200,
-            parity=serial.PARITY_ODD,
-            stopbits=serial.STOPBITS_TWO,
-            bytesize=serial.SEVENBITS,
-            timeout=1
+            baudrate=115200
         )
+        ser.timeout = timeout
 
-        if "top" in command:
-            ser.timeout = 10
-        ser.open()
-    
+        ser.isOpen()
+
         time.sleep(1)
         cmd = command + "\r"
         if ser.inWaiting() > 0:
             ser.flushInput()
 
+        logging.debug("Serial input: " + cmd)
         ser.write(bytes(cmd, 'UTF-8'))
         self.out = ser.read(size=4028).decode()
 
         ser.close()
+        logging.debug("Serial output: " + self.out)
         return self.out
 
-    def login(user, password):
-        self.send("\x03\r\n")
-        time.sleep(2)
-        content = self.send("\r")
+    def login(self, user, password):
+        content = self.send("\r\n")
         if "~ #" in content:
             logging.info("Already Logged in!")
             return 1
         while True:
             if "~ #" not in content:
-                logging.info("Logging in to system...\n")
+                logging.info("Logging in to system...")
                 if "login" in content:
-                    content = self.send(user + "\r")
-                    content = self.send(password + "\r")
+                    content = self.send(user)
+                    content = self.send(password)
                 else:
-                    content = self.send("\r")
+                    content = self.send("\r\n")
             else:
                 logging.info("Login Complete!")
                 return 1
 
+        # Never reach
         logging.error("Login Failed")
         return 0  # Failed

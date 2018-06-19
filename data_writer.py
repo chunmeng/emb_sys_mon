@@ -18,18 +18,18 @@ class DataWriter:
 
     def append_cpu(self, stats):
         with open(self.cpu_log, "a") as myfile:
-            line = str(stats.it) + ", " + stats.ts + "," + str(stats.used_cpu) + "," + str(stats.sirq) + "\n"
+            line = str(stats.it) + "," + stats.ts + "," + str(stats.used_cpu) + "," + str(stats.sirq) + "\n"
             myfile.write(line)
 
     def append_mem(self, stats):
         with open(self.mem_log, "a") as myfile:
-            line = str(stats.it) + ", " + stats.ts + "," + str(stats.calc_memutil()) + "," + str(stats.memfree) + "," + str(stats.slab) + "," + str(stats.slab_unreclaim) + "," + str(stats.km2k) + "," + str(stats.km512) + "\n"
+            line = str(stats.it) + "," + stats.ts + "," + str(stats.calc_memutil()) + "," + str(stats.memfree) + "," + str(stats.memavail) + "," + str(stats.slab) + "," + str(stats.slab_unreclaim) + "," + str(stats.km2k) + "," + str(stats.km512) + "\n"
             myfile.write(line)
 
     def create_logs(self):
         logging.info("Creating logs with header...")
         with open(self.mem_log, "w") as myfile:
-            line = "it,ts,memutil,memfree,slab,sunreclaim,kmalloc-2048,kmalloc-512\n"
+            line = "it,ts,memutil,memfree,memavail,slab,sunreclaim,kmalloc-2048,kmalloc-512\n"
             myfile.write(line)
 
         with open(self.cpu_log, "w") as myfile:

@@ -58,4 +58,4 @@ class Config:
             if 'interval' in data:
                 self.interval = data['interval']
 
-            logging.debug('Loaded config: ' + self.console.path + ', interval(s): ' + str(self.interval))
+            logging.info('Loaded config: ' + self.console.path + ', interval(s): ' + str(self.interval))

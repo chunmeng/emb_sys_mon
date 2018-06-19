@@ -33,6 +33,10 @@ class DataUpdater:
 
         self.lines = [self.li_cpu, self.li_sirq, self.li_memutil, self.li_memavail, self.li_memslab, self.li_memslab_unreclaim]
 
+        self.ax_cpu.legend()
+        self.ax_mem_kb.legend()
+        self.ax_mem_pct.legend(loc='lower right')
+
         # Setup data source and sink
         self.reader = reader
         self.writer = writer

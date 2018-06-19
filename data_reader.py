@@ -1,9 +1,12 @@
 #!/usr/bin/python3
 
+import logging
 import random
 import re
 import time
+from common import *
 from stats import Stats
+
 
 '''
 ' Stub class for testing without real data source
@@ -32,7 +35,7 @@ class DataReaderStub:
         self.stats.sirq = round(random.random() * 100, 2)
 
     def get_stats(self):
-        # @TODO: Mark timestamp
+        self.stats.ts = utc_str()
         self.read_meminfo()
         self.read_slabinfo()
         self.read_cpuinfo()
@@ -43,7 +46,7 @@ class DataReader(DataReaderStub):
         self.console = console
         DataReaderStub.__init__(self)
 
-    def parse_meminfo(content, tag):
+    def parse_meminfo(self, content, tag):
         matches = re.search(tag + ':(.*) kB', content)
         if matches is None:
             return False,0
@@ -53,8 +56,7 @@ class DataReader(DataReaderStub):
         return True,value
 
     def read_meminfo(self):
-        self.console.send("\x03\r\n")
-        time.sleep(2)
+        logging.info('Reading mem stats...')
         content = self.console.send("cat /proc/meminfo")
         exist,val = self.parse_meminfo(content, tag='MemTotal')
         if exist: self.stats.memtotal = val
@@ -66,3 +68,42 @@ class DataReader(DataReaderStub):
         if exist: self.stats.slab = val
         exist,val = self.parse_meminfo(content, tag='SUnreclaim')
         if exist: self.stats.slab_unreclaim = val
+
+        # handle meminfo without MemAvailable
+        if self.stats.memfree == 0:
+            _,buf = self.stats.parse_meminfo(content, 'Buffers')
+            _,cache = self.stats.parse_meminfo(content, 'Cached')
+            _,shmem = self.stats.parse_meminfo(content, 'Shmem')
+
+            self.stats.memavail = int((self.stats.memfree + buf + cache)-shmem)
+
+        logging.info('   ... Done')
+
+    def read_cpuinfo(self):
+        logging.info('Reading cpu stats...')
+        sum = 0
+        sum_sirq = 0
+        sample = 1
+        for num in range(0,sample):
+            # top command requires at least 6s timeout, the console will block until timeout
+            output = self.console.send("top -n 2 | grep CPU", timeout=6)
+            lines = output.split("usr")
+            # output = "CPU:  0.0% usr  0.0% sys  0.0% nic 95.6% idle  0.0% io  0.0% irq  4.3% sirq"
+            matches = re.search('nic(.*)% idle',lines[2])
+            idle = str(matches.group(1).lstrip())
+            used_cpu = float(100-float(idle))
+            sum = float(sum + used_cpu)
+
+            matches = re.search('irq(.*)% sirq',lines[2])
+            sirq = float(str(matches.group(1)).lstrip())
+            sum_sirq = float(sum + sirq)
+
+            logging.debug("Sample: " + str(num) + " " + idle + " " + str(round(used_cpu,2)) + " " + str(round(sum,2)) + " " + str(sirq))
+
+        avg = float(sum/sample)
+        avg_sirq = float(sum_sirq/sample)
+        self.stats.used_cpu = round(avg,2)
+        self.stats.sirq = round(avg_sirq,2)
+        logging.debug("CPU avg: " + str(self.stats.used_cpu) + " " + str(self.stats.sirq))
+
+        logging.info('   ... Done')
