@@ -186,7 +186,6 @@ def main():
     write_cpu(stats)
 
     # @TODO Handle incomplete data?
-
     logging.info("Export completed")
 
 if __name__ == "__main__":
