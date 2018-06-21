@@ -1,7 +1,7 @@
 {
     "console" : {
-        "type": "serial",
-        "path": "/dev/ttyUSB0",
+        "type": "ssh",
+        "path": "192.168.1.1",
         "login": "root",
         "password": "pwd"
     },
