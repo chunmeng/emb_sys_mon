@@ -71,9 +71,9 @@ class DataReader(DataReaderStub):
 
         # handle meminfo without MemAvailable
         if self.stats.memfree == 0:
-            _,buf = self.stats.parse_meminfo(content, 'Buffers')
-            _,cache = self.stats.parse_meminfo(content, 'Cached')
-            _,shmem = self.stats.parse_meminfo(content, 'Shmem')
+            _,buf = self.parse_meminfo(content, 'Buffers')
+            _,cache = self.parse_meminfo(content, 'Cached')
+            _,shmem = self.parse_meminfo(content, 'Shmem')
 
             self.stats.memavail = int((self.stats.memfree + buf + cache)-shmem)
 

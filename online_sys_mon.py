@@ -22,7 +22,7 @@ from serial_console import SerialConsole
 from data_updater import DataUpdater
 
 def read_fw_version(console):
-    fw_version = serial.send('version')
+    fw_version = console.send('version')
     logging.info('System running FW: ' + filter_nonprintable(fw_version[9:26]))
     return fw_version[9:26]
 
