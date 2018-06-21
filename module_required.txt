@@ -1,0 +1,7 @@
+# For graphing
+numpy
+matplotlib
+# For ssh console
+paramiko
+# For serial console
+serial
