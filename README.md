@@ -5,9 +5,19 @@ output the cpu and mem data for graphing.
 
 It also contains some utils for data extraction from captured logs.
 
+Additional python package install:
+sudo apt install python3-tk -y
+
+Required python module listed in module_required.txt
+pip install -r module_required.txt
+(sudo might be needed)
+
 TODO List:
 * Proper fw version parsing
 * Auto save figure on close + periodic plot save (every 100 iterations?)
 * slabinfo read and plotting
 * graph configuration
-* Input arg to run test or online mode
+* debug configuration
+** logging console output to file (important for event tracing)
+** output level
+* Config file as Input arg

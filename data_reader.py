@@ -83,11 +83,12 @@ class DataReader(DataReaderStub):
         logging.info('Reading cpu stats...')
         sum = 0
         sum_sirq = 0
-        sample = 1
+        sample = 2
         for num in range(0,sample):
             # top command requires at least 6s timeout, the console will block until timeout
             output = self.console.send("top -n 2 | grep CPU", timeout=6)
             lines = output.split("usr")
+            if (len(lines) < 2): break
             # output = "CPU:  0.0% usr  0.0% sys  0.0% nic 95.6% idle  0.0% io  0.0% irq  4.3% sirq"
             matches = re.search('nic(.*)% idle',lines[2])
             idle = str(matches.group(1).lstrip())
