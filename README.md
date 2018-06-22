@@ -13,7 +13,6 @@ pip install -r module_required.txt
 (sudo might be needed)
 
 TODO List:
-* Proper fw version parsing
 * Auto save figure on close + periodic plot save (every 100 iterations?)
 * slabinfo read and plotting
 * graph configuration

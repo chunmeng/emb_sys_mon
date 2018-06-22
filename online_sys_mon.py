@@ -14,21 +14,30 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-from common import *
+import common
 from config import Config
-from data_reader import *
+from data_reader import DataReaderStub,DataReader
 from data_writer import DataWriter
-from console import *
+from console import SerialConsole,SshConsole
 from data_updater import DataUpdater
 
 def read_fw_version(client):
-    fw_version = client.send('version')
-    fw_version = fw_version[:26]   # fw_version[9:26] when read with serial (need proper parsing)
-    logging.info('System running FW: ' + filter_nonprintable(fw_version))
-    return fw_version
+    import re
+    read_out = client.send('version')
+    ver = ''
+    if read_out != '':
+        # Test: read_out = '0.1.1.0-build5'
+        # 2 groups matching - will always return a tuple of 2 items or empty
+        groups = re.findall('(\d+\.(?:\d+\.)*\d+)([-]\w+)?', read_out)
+        if len(groups) != 0:
+            # print(groups)
+            part1,part2 = groups[0]
+            ver = part1 + part2
+            logging.info('System running FW: ' + ver)
+    return ver
 
 ''' Apps start '''
-set_logging(logging.INFO)
+common.set_logging(logging.INFO)
 
 # @TODO Make config path input arg
 config = Config(os.getcwd() + '/config.json')
