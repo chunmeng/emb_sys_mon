@@ -28,10 +28,11 @@ class DataUpdater:
         
         self.li_memutil, = self.ax_mem_pct.plot(self.t, self.mem_util, 'b', label='mem_util')
         self.li_memavail, = self.ax_mem_kb.plot(self.t, self.mem_avail, 'r', label='mem_avail')
+        self.li_memfree, = self.ax_mem_kb.plot(self.t, self.mem_free, 'coral', label='mem_free')
         self.li_memslab, = self.ax_mem_kb.plot(self.t, self.mem_slab, 'g--', label='slab')
         self.li_memslab_unreclaim, = self.ax_mem_kb.plot(self.t, self.mem_slab_unreclaim, 'y--', label='slab_unreclaim')
 
-        self.lines = [self.li_cpu, self.li_sirq, self.li_memutil, self.li_memavail, self.li_memslab, self.li_memslab_unreclaim]
+        self.lines = [self.li_cpu, self.li_sirq, self.li_memutil, self.li_memavail, self.li_memfree, self.li_memslab, self.li_memslab_unreclaim]
 
         self.ax_cpu.legend()
         self.ax_mem_kb.legend()
@@ -48,6 +49,7 @@ class DataUpdater:
         self.cpu_sirq = []
         self.mem_util = []
         self.mem_avail = []
+        self.mem_free = []
         self.mem_slab = []
         self.mem_slab_unreclaim = []
 
@@ -57,6 +59,7 @@ class DataUpdater:
         self.cpu_sirq += [stats.sirq]
         self.mem_util += [stats.memutil]
         self.mem_avail += [stats.memavail]
+        self.mem_free += [stats.memfree]
         self.mem_slab += [stats.slab]
         self.mem_slab_unreclaim += [stats.slab_unreclaim]
 
@@ -83,6 +86,7 @@ class DataUpdater:
 
         self.li_memutil.set_data(self.t, self.mem_util)
         self.li_memavail.set_data(self.t, self.mem_avail)
+        self.li_memfree.set_data(self.t, self.mem_free)
         self.li_memslab.set_data(self.t, self.mem_slab)
         self.li_memslab_unreclaim.set_data(self.t, self.mem_slab_unreclaim)
 
