@@ -4,4 +4,7 @@ matplotlib
 # For ssh console
 paramiko
 # For serial console
-serial
+# important: this should not be mixed with "serial" module.
+# If encounter error: serial module has no attribute "Serial".
+# Clean up the installation by pip uninstall serial,pyserial and reinstall pyserial
+pyserial
