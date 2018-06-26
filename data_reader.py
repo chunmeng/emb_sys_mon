@@ -56,7 +56,7 @@ class DataReader(DataReaderStub):
         return True,value
 
     def read_meminfo(self):
-        logging.info('Reading mem stats...')
+        logging.info('Reading mem stats ...')
         content = self.console.send("cat /proc/meminfo")
         exist,val = self.parse_meminfo(content, tag='MemTotal')
         if exist: self.stats.memtotal = val
@@ -79,8 +79,27 @@ class DataReader(DataReaderStub):
 
         logging.info('   ... Done')
 
+    def parse_slabinfo(self, content, tag):
+        matches = re.findall(tag + '\s+(\d+)', content)
+        if len(matches) == 0:
+            return False,0
+
+        value = int(matches[0])
+        # print("Found %s -> %s" % (matches.groups(), stats.memfree))
+        return True,value
+
+    def read_slabinfo(self):
+        logging.info('Reading slab stats ...')
+        content = self.console.send("slabinfo kmalloc")
+        exist,val = self.parse_slabinfo(content, tag='kmalloc-2048')
+        if exist: self.stats.km2k = val
+        exist,val = self.parse_slabinfo(content, tag='kmalloc-512')
+        if exist: self.stats.km512 = val
+
+        logging.info('   ... Done')
+
     def read_cpuinfo(self):
-        logging.info('Reading cpu stats...')
+        logging.info('Reading cpu stats ...')
         sum = 0
         sum_sirq = 0
         sample = 2
