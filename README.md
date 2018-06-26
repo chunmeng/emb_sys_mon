@@ -1,4 +1,7 @@
 # emb_sys_mon
+
+[![Build status](https://travis-ci.com/chunmeng/emb_sys_mon.svg?master)](https://travis-ci.com/chunmeng/emb_sys_mon)
+
 ## Brief
 This project is created for very specific use case and not a general purpose library/application.
 The main intent is monitor a target embedded system via serial command and

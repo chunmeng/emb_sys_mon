@@ -1,0 +1,10 @@
+language: python
+
+python:
+  - "3.6"
+
+install:
+  - pip install -r module_required.txt
+
+script: 
+  - python -m unittest discover . -p 'test_*.py'
