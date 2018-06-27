@@ -14,6 +14,7 @@ class Console:
 
     def send(self, command, timeout=1):
         print("Implement send command: " + command)
+        return ''
 
 class SerialConsole(Console):
     def __init__(self, config):
