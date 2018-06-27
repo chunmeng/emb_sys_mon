@@ -28,3 +28,8 @@ pip install -r module_required.txt
   - logging console output to file (important for event tracing)
   - output level
 - Config file as Input arg
+- event marking
+  - Only for post plotting? (and offline record)
+  - Using a fixed file with iter no, "Description of event"
+  - Is it possible to use the plot interaction to create the event log?
+    - i.e. click on the point when bring up a window to enter the event and the iteraction number is taken based on the point clicked
