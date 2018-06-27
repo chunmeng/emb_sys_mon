@@ -19,7 +19,7 @@ pip install -r module_required.txt
 
 ## TODO List:
 - Auto save figure on close + periodic plot save (every 100 iterations?)
-- slabinfo plotting
+- Rework plotting
   - need to restructure the plotting area, i.e.
   - % plot in one figure
   - kb in one axis, num of objects (kmalloc) in another
