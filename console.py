@@ -21,6 +21,7 @@ class SerialConsole(Console):
         Console.__init__(self)
 
     def send(self, command, timeout=1):
+        self.out = ''
         # configure the serial connections (the parameters differs on the device you are connecting to)
         ser = serial.Serial(
             port=self.port,
@@ -74,6 +75,7 @@ class SshConsole(Console):
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     def send(self, command, timeout=1):
+        self.out = ''
         try:
             self.client.connect(self.path, username=self.login, password=self.password)
             logging.debug("Shell input: " + command)
@@ -89,4 +91,4 @@ class SshConsole(Console):
             self.client.close()
         except:
             pass
-        return self.out       
+        return self.out

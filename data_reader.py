@@ -35,6 +35,7 @@ class DataReaderStub:
         self.stats.sirq = round(random.random() * 100, 2)
 
     def get_stats(self):
+        self.stats = Stats()  # Clean stats
         self.stats.ts = utc_str()
         self.read_meminfo()
         self.read_slabinfo()
