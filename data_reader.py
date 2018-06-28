@@ -117,7 +117,7 @@ class DataReader(DataReaderStub):
 
             matches = re.search('irq(.*)% sirq',lines[2])
             sirq = float(str(matches.group(1)).lstrip())
-            sum_sirq = float(sum + sirq)
+            sum_sirq = float(sum_sirq + sirq)
 
             logging.debug("Sample: " + str(num) + " " + idle + " " + str(round(used_cpu,2)) + " " + str(round(sum,2)) + " " + str(sirq))
 
