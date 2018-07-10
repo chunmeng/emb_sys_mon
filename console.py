@@ -10,7 +10,7 @@ from config import ConsoleConfig
 
 class Console:
     def __init__(self):
-        self.out = ''
+        ''' init something '''
 
     def send(self, command, timeout=1):
         print("Implement send command: " + command)
@@ -18,11 +18,10 @@ class Console:
 
 class SerialConsole(Console):
     def __init__(self, config):
-        self.port = config.path
         Console.__init__(self)
+        self.port = config.path
 
     def send(self, command, timeout=1):
-        self.out = ''
         # configure the serial connections (the parameters differs on the device you are connecting to)
         ser = serial.Serial(
             port=self.port,
@@ -39,10 +38,10 @@ class SerialConsole(Console):
 
         logging.debug("Serial input: " + cmd)
         ser.write(bytes(cmd, 'UTF-8'))
-        self.out = ser.read(size=4028).decode().strip('\n')
+        out = ser.read(size=4028).decode().strip('\n')
         ser.close()
-        logging.debug("Serial output: " + self.out)
-        return self.out
+        logging.debug("Serial output: " + out)
+        return out
 
     def login(self, user, password):
         content = self.send("\r\n")
@@ -74,22 +73,44 @@ class SshConsole(Console):
         self.client = paramiko.SSHClient()
         # client.load_system_host_keys()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.do_connect()
 
-    def send(self, command, timeout=1):
-        self.out = ''
+    def __exit__(self, type, value, traceback):
+        self.do_close()
+
+    def do_connect(self):
+        if self.client.get_transport() is not None:
+            if self.client.get_transport().is_active():
+                return True
+
         try:
             self.client.connect(self.path, username=self.login, password=self.password)
-            logging.debug("Shell input: " + command)
-            _, stdout, _ = self.client.exec_command(command, timeout=timeout)
-            self.out = stdout.read().decode().strip('\n')
-            # close MUST only happen after stdout is processed
-            logging.debug("Shell output: " + self.out)
         except Exception as e:
-            logging.error("SSH connection failed: " + str(e))
+            logging.error("SSH connect failed: " + str(e))
             traceback.print_exc()
+            self.do_close()
+            return False
 
+    def do_close(self):
         try:
             self.client.close()
         except:
             pass
-        return self.out
+
+    def send(self, command, timeout=1):
+        if self.do_connect() == False:
+            return ''
+
+        out = ''
+        try:
+            # @TODO - Do reconnect on failed? Possible for connection to break
+            logging.debug("Shell input: " + command)
+            _, stdout, _ = self.client.exec_command(command, timeout=timeout)
+            out = stdout.read().decode().strip('\n')
+            # close MUST only happen after stdout is processed
+            logging.debug("Shell output: " + out)
+        except Exception as e:
+            logging.error("SSH failed: " + str(e))
+            traceback.print_exc()
+
+        return out
