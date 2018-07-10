@@ -22,19 +22,8 @@ from console import SerialConsole,SshConsole
 from data_updater import DataUpdater
 
 def read_fw_version(client):
-    import re
     read_out = client.send('version')
-    ver = ''
-    if read_out != '':
-        # Test: read_out = '0.1.1.0-build5'
-        # 2 groups matching - will always return a tuple of 2 items or empty
-        groups = re.findall('(\d+\.(?:\d+\.)*\d+)([-]\w+)?', read_out)
-        if len(groups) != 0:
-            # print(groups)
-            part1,part2 = groups[0]
-            ver = part1 + part2
-            logging.info('System running FW: ' + ver)
-    return ver
+    return common.parse_version(read_out)
 
 ''' Apps start '''
 common.set_logging(logging.INFO)

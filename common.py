@@ -27,3 +27,16 @@ def filter_nonprintable(text):
 
 def set_logging(setlevel):
     logging.basicConfig(level=setlevel, format='%(asctime)s %(filename)s [%(lineno)4d] %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+def parse_version(content):
+    import re
+    ver = ''
+    if content != '':
+        # 2 groups matching - will always return a tuple of 2 items or empty
+        groups = re.findall('(\d+\.(?:\d+\.)*\d+)([\w.+-_*]+)?', content)
+        if len(groups) != 0:
+            # print(groups)
+            part1,part2 = groups[0]
+            ver = part1 + part2
+            logging.info('System running FW: ' + ver)
+    return ver
