@@ -7,7 +7,6 @@ import time
 from common import *
 from stats import Stats
 
-
 '''
 ' Stub class for testing without real data source
 ' Generate random input
@@ -34,18 +33,31 @@ class DataReaderStub:
         self.stats.used_cpu = round(random.random() * 100, 2)
         self.stats.sirq = round(random.random() * 100, 2)
 
-    def get_stats(self):
-        self.stats = Stats()  # Clean stats
+    def set_iteration(self, itr=0):
+        self.stats.it = itr
         self.stats.ts = utc_str()
+
+    def get_stats(self, itr=0):
+        self.stats = Stats()  # Clean stats
+        self.set_iteration(itr)
         self.read_meminfo()
         self.read_slabinfo()
         self.read_cpuinfo()
         return self.stats
 
 class DataReader(DataReaderStub):
+    mem_command = 'cat /proc/meminfo'
+    cpu_command = 'top -n 2'
+    slab_command = 'slabinfo kmalloc'
+
     def __init__(self, console):
         self.console = console
         DataReaderStub.__init__(self)
+
+    def set_iteration(self, itr=0):
+        self.stats.it = itr
+        self.stats.ts = utc_str()
+        self.console.iteration = itr
 
     def parse_meminfo(self, content, tag):
         matches = re.search(tag + ':(.*) kB', content)
@@ -58,7 +70,7 @@ class DataReader(DataReaderStub):
 
     def read_meminfo(self):
         logging.info('Reading mem stats ...')
-        content = self.console.send("cat /proc/meminfo")
+        content = self.console.send(self.mem_command)
         exist,val = self.parse_meminfo(content, tag='MemTotal')
         if exist: self.stats.memtotal = val
         exist,val = self.parse_meminfo(content, tag='MemAvailable')
@@ -91,7 +103,7 @@ class DataReader(DataReaderStub):
 
     def read_slabinfo(self):
         logging.info('Reading slab stats ...')
-        content = self.console.send("slabinfo kmalloc")
+        content = self.console.send(self.slab_command)
         exist,val = self.parse_slabinfo(content, tag='kmalloc-2048')
         if exist: self.stats.km2k = val
         exist,val = self.parse_slabinfo(content, tag='kmalloc-512')
@@ -106,7 +118,7 @@ class DataReader(DataReaderStub):
         sample = 2
         for num in range(0,sample):
             # top command requires at least 6s timeout, the console will block until timeout
-            output = self.console.send("top -n 2 -b", timeout=10)
+            output = self.console.send(self.cpu_command, timeout=6)
             valid,idle,sirq = parse_top(output)
             if not valid: break
             used_cpu = float(100-idle)

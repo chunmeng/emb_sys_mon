@@ -38,6 +38,7 @@ class Config:
 
     def load(self, configFile):
         if not file_accessible(configFile, 'r'):
+            logging.warn('config: ' + configFile + ' not found, using default')
             return
 
         with open(configFile) as f:

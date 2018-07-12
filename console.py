@@ -12,7 +12,13 @@ from common import utc_str
 
 class Console:
     def __init__(self):
-        ''' init something '''
+        self.iteration = 0
+        self.logfile = 'console.log' # FIXME: Make this per logging session
+        if os.path.isfile(self.logfile):
+            # Operate in current working directory
+            target = "console_" + utc_str() + ".bak"
+            logging.warn(self.logfile + " exists, backup as " + target)
+            os.rename(self.logfile, target)
 
     def send(self, command, timeout=1):
         print("Implement send command: " + command)
@@ -20,9 +26,9 @@ class Console:
 
     def log(self, content):
         ''' Hacking way first - always append to same file '''
-        with open("console.log", "a") as logfile:
-            logfile.write("--- " + str(datetime.now()) + "   " + utc_str() + " ---\n")
-            logfile.write(content + "\n")
+        with open(self.logfile, "a") as log:
+            log.write("--- " + str(datetime.now()) + "  " + utc_str() + "  itr " + str(self.iteration) + " ---\n")
+            log.write(content + "\n")
 
 class SerialConsole(Console):
     def __init__(self, config):

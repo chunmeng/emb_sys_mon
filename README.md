@@ -4,20 +4,26 @@
 
 ## Brief
 This project is created for very specific use case and not a general purpose library/application.
-The main intent is monitor a target embedded system via serial command and
-output the cpu and mem data for graphing.
+The main intent is monitor a target linux embedded system via serial command and output the cpu and mem data for graphing.
+
+The linux embedded system is expected to provide meminfo, slabinfo and top in specific format.
 
 It also contains some utils for data extraction from captured logs.
 
 ## Additional python package
-sudo apt install python3-tk -y
+`sudo apt install python3-tk -y`
 
 ## python modules
-Required python module listed in module_required.txt
-pip install -r module_required.txt
+Required python module listed in module_required.txt.
+
+`pip install -r module_required.txt`
 (sudo would be needed)
 
-## TODO List:
+## Usage
+Edit the config.json accordingly
+`python online_sys_mon.py`
+
+## TODO
 - Auto save figure on close + periodic plot save (every 100 iterations?)
 - Rework plotting
   - need to restructure the plotting area, i.e.

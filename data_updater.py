@@ -28,7 +28,7 @@ class DataUpdater:
         self.ax_cpu.add_line(self.li_sirq)
         
         # https://matplotlib.org/api/colors_api.html
-        self.li_memutil, = self.ax_mem_pct.plot(self.t, self.mem_util, 'g', label='mem_util', lw=1.0)
+        self.li_memutil, = self.ax_mem_pct.plot(self.t, self.mem_util, 'g--', label='mem_util', lw=1.0)
 
         self.li_memavail, = self.ax_mem_kb.plot(self.t, self.mem_avail, 'r', label='mem_avail')
         self.li_memfree, = self.ax_mem_kb.plot(self.t, self.mem_free, 'coral', label='mem_free')
@@ -80,8 +80,7 @@ class DataUpdater:
         logging.info("Iteration " + str(i))
 
         # Read and write data
-        stats = self.reader.get_stats()
-        stats.it = i
+        stats = self.reader.get_stats(i)
         self.writer.append(stats)
 
         # Update lines data
