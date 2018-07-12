@@ -2,11 +2,13 @@
 
 import serial
 import time
+from datetime import datetime
 import os
 import logging
 import paramiko
 import traceback
 from config import ConsoleConfig
+from common import utc_str
 
 class Console:
     def __init__(self):
@@ -15,6 +17,12 @@ class Console:
     def send(self, command, timeout=1):
         print("Implement send command: " + command)
         return ''
+
+    def log(self, content):
+        ''' Hacking way first - always append to same file '''
+        with open("console.log", "a") as logfile:
+            logfile.write("--- " + str(datetime.now()) + "   " + utc_str() + " ---\n")
+            logfile.write(content + "\n")
 
 class SerialConsole(Console):
     def __init__(self, config):
@@ -38,9 +46,10 @@ class SerialConsole(Console):
 
         logging.debug("Serial input: " + cmd)
         ser.write(bytes(cmd, 'UTF-8'))
-        out = ser.read(size=4028).decode().strip('\n')
+        out = ser.read(size=8096).decode().strip('\n')
         ser.close()
         logging.debug("Serial output: " + out)
+        self.log(out)
         return out
 
     def login(self, user, password):
@@ -50,7 +59,7 @@ class SerialConsole(Console):
             return 1
         while True:
             if "~ #" not in content:
-                logging.info("Logging in to system...")
+                logging.info("Logging in to system... " + user + " " + password)
                 if "login" in content:
                     content = self.send(user)
                     content = self.send(password)
@@ -112,5 +121,7 @@ class SshConsole(Console):
         except Exception as e:
             logging.error("SSH failed: " + str(e))
             traceback.print_exc()
+            self.do_close()
 
+        self.log(out)
         return out
