@@ -40,3 +40,29 @@ def parse_version(content):
             ver = part1 + part2
             logging.info('System running FW: ' + ver)
     return ver
+
+# Return a tuple of valid(bool),idle(float),sirq(float)
+def parse_top(content):
+    import re
+    valid = False
+    idle = 0.0
+    sirq = 0.0
+
+    matches = re.findall('(CPU:.*)', content)
+    # print(matches)
+    l = len(matches)
+    if l == 0: return valid,idle,sirq # No match
+
+    # Consider only the last entry
+    line = matches[l-1]
+    match = re.search('nic\s+(\d.*)%\s+idle', line)
+    if match is not None:
+        idle = float(str(match.group(1).lstrip()))
+        valid = True
+
+    match = re.search('irq\s+(\d.*)%\s+sirq', line)
+    if match is not None:
+        sirq = float(str(match.group(1)).lstrip())
+        valid = True
+
+    return valid,idle,sirq

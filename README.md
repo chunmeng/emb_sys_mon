@@ -25,7 +25,6 @@ pip install -r module_required.txt
   - kb in one axis, num of objects (kmalloc) in another
 - graph configuration
 - debug configuration
-  - logging console output to file (important for event tracing)
   - output level
 - Config file as Input arg
 - event marking
@@ -33,3 +32,8 @@ pip install -r module_required.txt
   - Using a fixed file with iter no, "Description of event"
   - Is it possible to use the plot interaction to create the event log?
     - i.e. click on the point when bring up a window to enter the event and the iteraction number is taken based on the point clicked
+- Additional data flexibility
+  - top -m for mem use per process
+  - Setting to allow different top parsing
+    - top -n 2 | grep CPU
+    - top -n 2 -b
