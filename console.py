@@ -13,7 +13,7 @@ from common import utc_str
 class Console:
     def __init__(self):
         self.iteration = 0
-        self.logfile = 'console.log' # FIXME: Make this per logging session
+        self.logfile = 'console.log' # TODO: Make this per logging session
         if os.path.isfile(self.logfile):
             # Operate in current working directory
             target = "console_" + utc_str() + ".bak"
@@ -37,6 +37,7 @@ class SerialConsole(Console):
 
     def send(self, command, timeout=1):
         # configure the serial connections (the parameters differs on the device you are connecting to)
+        # FIXME: If the unit reboot, the serial lost its login and need to relogin - no handling here
         ser = serial.Serial(
             port=self.port,
             baudrate=115200
@@ -118,7 +119,6 @@ class SshConsole(Console):
 
         out = ''
         try:
-            # @TODO - Do reconnect on failed? Possible for connection to break
             logging.debug("Shell input: " + command)
             _, stdout, _ = self.client.exec_command(command, timeout=timeout)
             out = stdout.read().decode().strip('\n')
